@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONPObject;
 import com.example.gongan.pojo.DataItems;
 import com.example.gongan.pojo.Dataset;
 import com.example.gongan.pojo.RequestParam;
+import com.example.gongan.pojo.UserPram.UploadVehicleInfo;
 import com.example.gongan.pojo.UserPram.UserDesensitizationInfo;
 import com.example.gongan.pojo.UserPram.UserParm;
 import com.example.gongan.util.Bas64;
@@ -69,16 +70,40 @@ public class ApiClient {
         return result;
 
     }
+
+    /**
+     * 
+     * 上传车辆信息
+    */
+    public String puttUploadVehicleInfo(UploadVehicleInfo uploadVehicleInfo) throws Exception {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        //https://172.31.35.20:99/send/data
+        String url = constant.gongan_url + "/api/hello/getdata";
+
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+        //访问令牌
+        map.add("AccessKey",constant.gongan_accessKey);
+        //数据类型
+        map.add("DataType", constant.data_type);
+        //主要参数
+        map.add("RequestParam",uploadVehicleInfo);
+        //发送请求
+        HttpEntity<MultiValueMap<String, Object>> requestBody = new HttpEntity<>(map, headers);
+        String result = restTemplate.postForEntity(url, requestBody, String.class).getBody();
+        System.out.println("公安一部回复"+result);
+        return result;
+
+    }
 //一下是动态数据上传
     //上传人脸数据
-    public void puttUserRenLian()
-            throws Exception {
+    public String puttUserRenLian(UploadVehicleInfo uploadVehicleInfo)throws Exception {
         HttpHeaders headers = new HttpHeaders();
         //这个自测的时候会报错
         //headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.setContentType(MediaType.APPLICATION_JSON);
         //https://172.31.35.20:99/send/data
-        String url = constant.gonganUrl + "/api/hello/testAlla";
+        String url = constant.gongan_url + "/api/hello/data";
         //创建数据源dataItems
         DataItems dataItems = new DataItems();
         dataItems.setName("DEVICE_NUMBER");
@@ -114,66 +139,11 @@ public class ApiClient {
         map.add("RequestParam",requestParam);
         //发送请求
         HttpEntity<MultiValueMap<String, Object>> requestBody = new HttpEntity<>(map, headers);
-        String body = restTemplate.postForEntity(url, requestBody, String.class).getBody();
-        System.out.println("公安一部回复"+body);
+        String result = restTemplate.postForEntity(url, requestBody, String.class).getBody();
+        System.out.println("公安一部回复"+result);
+        return result;
 
     }
-
-    //上传车辆识别信息
-    public void putCheLiang()
-            throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-                //这个自测的时候会报错
-        //headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        //https://172.31.35.20:99/send/data
-        String url = constant.gonganUrl + "/api/hello/testAllb";
-        //创建数据源
-        DataItems dataItems = new DataItems();
-        dataItems.setName("PLATE_NUMBER");
-        dataItems.setType("");
-        dataItems.setFmt("");
-        //创建数据源
-        Dataset dataset = new Dataset();
-        dataset.setDataItems(dataItems);
-        dataset.setResourceName("vehicledata");
-        List<String> data1 = new ArrayList<String>();
-        // 车牌信息
-        data1.add("粤 A66666");
-        Date date = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        // 设备编码
-        data1.add("1101142332445-002-33333");
-        // 进出类型
-        data1.add("1");
-        // 获得车牌图片 base64字符串
-        String s1 = Bas64.ImageToBase64("E:\\code\\gongan\\src\\main\\resources\\img\\a.jpg");
-        // 车牌图片 base64
-        data1.add(s1);
-        // 背景图片 base64
-        data1.add("背景图片 base64");
-        // 创建时间
-        data1.add(format.format(date));
-        dataset.setDataInfo(data1);
-        //创建主要参数数据
-        RequestParam requestParam = new RequestParam();
-        requestParam.setDataset(dataset);
-        requestParam.setIsTransaction("0");
-
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
-        //访问令牌
-        map.add("AccessKey","F209F3288DD39E28FD398B1048643CDD");
-        //数据唯一标识(需要修改一下)
-        map.add("MessageSequence", "2019010714141200002");
-        //主要参数
-        map.add("RequestParam",requestParam);
-        //发送请求
-        HttpEntity<MultiValueMap<String, Object>> requestBody = new HttpEntity<>(map, headers);
-        String body = restTemplate.postForEntity(url, requestBody, String.class).getBody();
-        System.out.println("公安一部回复"+body);
-
-    }
-
 
     //上传智慧门禁数据
     public void putMenJin()
@@ -183,7 +153,7 @@ public class ApiClient {
         //headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.setContentType(MediaType.APPLICATION_JSON);
         //https://172.31.35.20:99/send
-        String url = constant.gonganUrl + "/api/hello/testAllc";
+        String url = constant.gongan_url + "/api/hello/testAllc";
         //创建数据源
         DataItems dataItems = new DataItems();
         dataItems.setName("RESIDENT_ID");
@@ -236,7 +206,7 @@ public class ApiClient {
         //headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.setContentType(MediaType.APPLICATION_JSON);
         //https://172.31.35.20:99/send/data
-        String url = constant.gonganUrl + "/api/hello/testAlld";
+        String url = constant.gongan_url + "/api/hello/testAlld";
         //创建数据源
         DataItems dataItems = new DataItems();
         dataItems.setName("DEV_NUMBER");

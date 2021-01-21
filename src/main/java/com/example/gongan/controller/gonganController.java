@@ -1,5 +1,6 @@
 package com.example.gongan.controller;
 
+import com.example.gongan.pojo.UserPram.UploadVehicleInfo;
 import com.example.gongan.pojo.UserPram.UserDesensitizationInfo;
 import com.example.gongan.pojo.UserPram.UserParm;
 import com.example.gongan.restapi.ApiClient;
@@ -51,7 +52,7 @@ import javax.servlet.http.HttpServletResponse;
                 return "";
             }
 
-            //1上传居民信息
+            //3.2.2上传居民信息
             @ResponseBody
             @RequestMapping(value ="/shanchuanjumin", headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
             @ApiOperation(value = "上传居民信息")
@@ -99,7 +100,7 @@ import javax.servlet.http.HttpServletResponse;
                 return result;
             }
 
-            //2接收居民脱敏信息
+            //3.3.1接收居民脱敏信息
             @ApiOperation(value = "接收居民脱敏信息")
             @ResponseBody
             @RequestMapping(value = "/jieshoujumin",headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
@@ -118,26 +119,72 @@ import javax.servlet.http.HttpServletResponse;
                 return result;
             }
 
-            //3上传人脸识别数据
-            @ApiOperation(value = "上传人脸识别数据")
+            //3.2.3 上传车辆信息
+            @ApiOperation(value = "上传车辆信息")
             @ResponseBody
-            @RequestMapping(value = "/shangchuanrenlian",method = RequestMethod.POST)
-            public String shangchuanrenlian(
+            @RequestMapping(value = "/uploadVehicleInfo",headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
+            public String uploadVehicleInfo(UploadVehicleInfo uploadVehicleInfo) throws Exception {
+                UploadVehicleInfo date_info = new UploadVehicleInfo();
+                String result;
 
-            ) throws Exception {
-                apiHttpClient.puttUserRenLian();
-                return "";
+                try {
+                    //车牌号码
+                    date_info.setVEHICLE_CODE(request.getParameter("VEHICLE_CODE"));
+                    //使用人姓名
+                    date_info.setUSER_NAME(request.getParameter("USER_NAME"));
+                    //使用人证件类型
+                    date_info.setUSER_ZJLX(request.getParameter("USER_ZJLX"));
+                    //使用人证件号码
+                    date_info.setUSER_ZJHM(request.getParameter("USER_ZJHM"));
+                    //使用人居住地址信息
+                    date_info.setUSER_ADDRESS(request.getParameter("USER_ADDRESS"));
+                    //车辆品牌
+                    date_info.setVEHICLE_BRAND(request.getParameter("VEHICLE_BRAND"));
+                    //车辆颜色
+                    date_info.setVEHICLE_COLOR(request.getParameter("VEHICLE_COLOR"));
+                    //备注
+                    date_info.setMEMO(request.getParameter("MEMO"));
+                    result = apiHttpClient.puttUploadVehicleInfo(date_info);
+                } catch (Exception e) {
+                    //TODO: handle exception
+                    return "ss error." + e;
+                }
+                
+                return result;
             }
             
             //4上传车辆识别数据
             @ApiOperation(value = "上传车辆识别数据")
             @ResponseBody
-            @RequestMapping(value = "/shangchuancheliang",method = RequestMethod.POST)
-            public String shangchuancheliang(
+            @RequestMapping(value = "/shangchuancheliang",headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
+            public String shangchuancheliang(UploadVehicleInfo uploadVehicleInfo) throws Exception {
+                UploadVehicleInfo date_info = new UploadVehicleInfo();
+                String result;
+                try {
+                    //车牌号码
+                    date_info.setVEHICLE_CODE(request.getParameter("VEHICLE_CODE"));
+                    //使用人姓名
+                    date_info.setUSER_NAME(request.getParameter("USER_NAME"));
+                    //使用人证件类型
+                    date_info.setUSER_ZJLX(request.getParameter("USER_ZJLX"));
+                    //使用人证件号码
+                    date_info.setUSER_ZJHM(request.getParameter("USER_ZJHM"));
+                    //使用人居住地址信息
+                    date_info.setUSER_ADDRESS(request.getParameter("USER_ADDRESS"));
+                    //车辆品牌
+                    date_info.setVEHICLE_BRAND(request.getParameter("VEHICLE_BRAND"));
+                    //车辆颜色
+                    date_info.setVEHICLE_COLOR(request.getParameter("VEHICLE_COLOR"));
+                    //备注
+                    date_info.setMEMO(request.getParameter("MEMO"));
+                    result = apiHttpClient.putCheLiang(date_info);
+                    
+                } catch (Exception e) {
+                    //TODO: handle exception
+                    return "uploadVehicleInfo error." + e;
+                }
 
-            ) throws Exception {
-                apiHttpClient.putCheLiang();
-                return "";
+                return result;
             }
 
 
