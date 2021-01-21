@@ -70,7 +70,26 @@ public class ApiClient {
         return result;
 
     }
+    public String putCheLiang(UploadVehicleInfo date_info) throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
+        //String url = "https://172.31.35.20:99/api/getdata";
+        String url = constant.gongan_url + "/api/hello/getdata";
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+       // Map<String, Object> uriVariables = new HashMap<String, Object>();
+        map.add("AccessKey", "F209F3288DD39E28FD398B1048643CDD");
+        map.add("dataType", "residentdata");
+
+        map.add("RequestParam",date_info);
+
+        
+        HttpEntity<MultiValueMap<String, Object>> requestBody = new HttpEntity<>(map, headers);
+        String result = restTemplate.postForEntity(url, requestBody, String.class).getBody();
+        System.out.println("公安一部回复"+result);
+        return result;
+
+    }
     /**
      * 
      * 上传车辆信息

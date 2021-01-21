@@ -177,7 +177,7 @@ import javax.servlet.http.HttpServletResponse;
                     date_info.setVEHICLE_COLOR(request.getParameter("VEHICLE_COLOR"));
                     //备注
                     date_info.setMEMO(request.getParameter("MEMO"));
-                    result = apiHttpClient.putCheLiang(date_info);
+                    apiHttpClient.putCheLiang(date_info);
                     
                 } catch (Exception e) {
                     //TODO: handle exception
