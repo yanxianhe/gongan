@@ -48,7 +48,7 @@ import javax.servlet.http.HttpServletResponse;
 
             ) throws Exception {
 
-                apiHttpClient.getUser();
+                
                 return "";
             }
 
