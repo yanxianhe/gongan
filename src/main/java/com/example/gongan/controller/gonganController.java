@@ -2,9 +2,11 @@ package com.example.gongan.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.example.gongan.pojo.UserPram.UploadDeviceInfo;
 import com.example.gongan.pojo.UserPram.UploadVehicleInfo;
 import com.example.gongan.pojo.UserPram.UserDesensitizationInfo;
 import com.example.gongan.pojo.UserPram.UserParm;
+
 import com.example.gongan.restapi.ApiZhsqSdkClient;
 import com.example.gongan.util.Bas64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +47,30 @@ import javax.servlet.http.HttpServletResponse;
             //0 上传设备信息
             @ApiOperation(value = "上传设备信息")
             @ResponseBody
-            @RequestMapping(value = "/uploadDeviceInfo",method = RequestMethod.POST)
-            public String UploadDeviceInfo() throws Exception {
+            @RequestMapping(value = "/uploadDeviceInfos",method = RequestMethod.POST)
+            public String UploadDeviceInfos(UploadDeviceInfo info) throws Exception {
+
+                try {
+                    JSONArray dataInfo = new JSONArray();
+                    JSONObject data1 = new JSONObject();
+                    //设备名称
+                    data1.put("DEV_NAME","001 智慧门禁设备");
+                    // 设备类型
+                    data1.put("DEV_TYPE","001");
+                    // 设备编码
+                    data1.put("DEVICE_NUMBER","1101081111111-001-33566442");
+                    // 安装地址
+                    data1.put("PLACE","北京市丰台区 XX 小区 X 号楼 X 单元");
+                    // 经度
+                    data1.put("LONGITUDE","116.313000");
+                    // 纬度
+                    data1.put("LATITUDE","39.972000");
+                    // 备注
+                    data1.put("MEMO","测试 1");
+                    dataInfo.add(data1);
+                } catch (Exception e) {
+                    //TODO: handle exception
+                }
 
                 
                 return "";
