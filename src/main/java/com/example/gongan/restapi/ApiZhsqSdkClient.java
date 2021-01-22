@@ -1,6 +1,6 @@
 package com.example.gongan.restapi;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPObject;
 import com.example.gongan.pojo.DataItems;
@@ -9,21 +9,18 @@ import com.example.gongan.pojo.RequestParam;
 import com.example.gongan.pojo.UserPram.UploadVehicleInfo;
 import com.example.gongan.pojo.UserPram.UserDesensitizationInfo;
 import com.example.gongan.pojo.UserPram.UserParm;
-import com.example.gongan.restconfig.RestTemplateConfig;
 import com.example.gongan.util.Bas64;
 import com.example.gongan.util.constant;
+import com.zhsq.zhsq.ZhsqClient;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
-import io.swagger.models.HttpMethod;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -33,106 +30,97 @@ import java.util.*;
  *对接公安一部接口
  */
 @Component
-public class ApiClient {
+public class ApiZhsqSdkClient {
     @Autowired
     public RestTemplate restTemplate;
-
-    //上传居民信息
-    public String puttUser(UserParm userinfo) throws Exception {
+    /**
+     * 
+     * 上传车辆信息 已经调通
+    */
+    public String puttUploadVehicleInfo(JSONArray dataInfo) throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        //String url = constant.gongan_url + "/api/hello/getgongan";
         String url = constant.gongan_url;
-        
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         //访问令牌
         map.add("AccessKey",constant.gongan_accessKey);
         //数据类型
         map.add("DataType", constant.data_type);
-        //传入居民对象
-        map.add("RequestParam",userinfo);
-        //发送请求
-        HttpEntity<MultiValueMap<String, Object>> requestBody = new HttpEntity<>(map, headers);
-        String body = restTemplate.postForEntity(url, requestBody, String.class).getBody();
-        return body;
+
+        JSONObject object;
+        try {
+            ZhsqClient client = new ZhsqClient(url);
+            object = client.staticDataUpload(constant.gongan_accessKey, "vehicle", dataInfo.toString());  
+        } catch (Exception e) {
+            //TODO: handle exception
+            return e.getMessage();
+        }
+        return object.toString();
     }
-    //获得脱敏信息
-    public String getUser(UserDesensitizationInfo date_info) throws Exception{
+    /**
+     * 
+     * 上传居民信息 已经调通
+    */
+    public String puttUploadResidentInfo(JSONArray dataInfo) throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        //String url = "https://172.31.35.20:99/api/getdata";
-        String url = constant.gongan_url + "/api/hello/getdata";
+        String url = constant.gongan_url;
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
-       // Map<String, Object> uriVariables = new HashMap<String, Object>();
-        map.add("AccessKey", "F209F3288DD39E28FD398B1048643CDD");
-        map.add("dataType", "residentdata");
-
-        map.add("RequestParam",date_info);
-
-        
-        HttpEntity<MultiValueMap<String, Object>> requestBody = new HttpEntity<>(map, headers);
-        String result = restTemplate.postForEntity(url, requestBody, String.class).getBody();
-        System.out.println("公安一部回复"+result);
-        return result;
+        //访问令牌
+        map.add("AccessKey",constant.gongan_accessKey);
+        //数据类型
+        map.add("DataType", constant.data_type);
+        JSONObject object;
+        try {
+            ZhsqClient client = new ZhsqClient(url);
+            String accessKey = constant.gongan_accessKey;
+            object = client.staticDataUpload(accessKey, "resident", dataInfo.toString());
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+        return object.toString();
+    }
+    /**
+     * 
+     * 获得脱敏信息 已经调通
+    */
+    public String getReceiveDesInfoResidents(UserDesensitizationInfo userDesensitizationInfo) throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String url = constant.gongan_url;
+        JSONObject object;
+        try {
+            ZhsqClient client = new ZhsqClient(url);
+            String accessKey = constant.gongan_accessKey;
+            String startTime = userDesensitizationInfo.getStartTime();
+            String endTime = userDesensitizationInfo.getEndTime();
+            
+            object = client.getResData(accessKey,"residentdata",startTime,endTime);
+        } catch (Exception e) {
+            //TODO: handle exception
+            return e.getMessage();
+        }
+        return object.toString();
 
     }
     public String putCheLiang(UploadVehicleInfo date_info) throws Exception{
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
         //String url = "https://172.31.35.20:99/api/getdata";
         String url = constant.gongan_url + "/api/hello/getdata";
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
        // Map<String, Object> uriVariables = new HashMap<String, Object>();
         map.add("AccessKey", "F209F3288DD39E28FD398B1048643CDD");
         map.add("dataType", "residentdata");
-
         map.add("RequestParam",date_info);
-
-        
         HttpEntity<MultiValueMap<String, Object>> requestBody = new HttpEntity<>(map, headers);
         String result = restTemplate.postForEntity(url, requestBody, String.class).getBody();
         System.out.println("公安一部回复"+result);
         return result;
 
     }
-    /**
-     * 
-     * 上传车辆信息
-    */
-    public String puttUploadVehicleInfo(UploadVehicleInfo uploadVehicleInfo) throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        //https://172.31.35.20:99/send/data
-        //String url = constant.gongan_url + "/api/hello/getdata";
-        String url = constant.gongan_url;
 
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
-        //访问令牌
-        map.add("AccessKey",constant.gongan_accessKey);
-        //数据类型
-        map.add("DataType", constant.data_type);
-        //主要参数
-        map.add("RequestParam",uploadVehicleInfo);
-
-        HttpEntity<MultiValueMap<String, Object>> requestBody = new HttpEntity<>(map, headers);
-        // String result = restTemplate.postForEntity(url, requestBody, String.class).getBody();
-        // System.out.println("公安一部回复"+result);
-
-
-        ResponseEntity<String> result=restTemplate.postForEntity(url,requestBody,String.class);
-        
-        return result.toString();
-
-    }
-
-
-    private HttpEntity entity(UploadVehicleInfo uploadVehicleInfo) {
-        return null;
-    }
-
-    // 一下是动态数据上传
+//一下是动态数据上传
     //上传人脸数据
     public String puttUserRenLian(UploadVehicleInfo uploadVehicleInfo)throws Exception {
         HttpHeaders headers = new HttpHeaders();

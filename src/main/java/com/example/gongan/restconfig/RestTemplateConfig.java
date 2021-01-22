@@ -1,42 +1,51 @@
 package com.example.gongan.restconfig;
 
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.ssl.TrustStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.StandardCharsets;
-import java.util.List;
+import javax.net.ssl.SSLContext;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 
 @Configuration
 public class RestTemplateConfig {
+
     @Bean
-    public RestTemplate restTemplate(ClientHttpRequestFactory factory) {
-        RestTemplate restTemplate = new RestTemplate(factory);
-        List<HttpMessageConverter<?>> messageConverters = restTemplate.getMessageConverters();
-        for (int i = 0; i < messageConverters.size(); i++) {
-            HttpMessageConverter<?> httpMessageConverter = messageConverters.get(i);
-            if (httpMessageConverter.getClass().equals(StringHttpMessageConverter.class)) {
-                StringHttpMessageConverter smc = new StringHttpMessageConverter(StandardCharsets.UTF_8);
-                messageConverters.set(i, smc);
-                 }
-        }
-        return restTemplate;
+    public RestTemplate restTemplate(ClientHttpRequestFactory factory){
+        return new RestTemplate(factory);
     }
 
-    //ClientHttpRequestFactory:http请求工场
     @Bean
-    public ClientHttpRequestFactory simpleClientHttpRequestFactory() {
-        System.out.println("开始初始化ClientHttpRequestFactory");
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(3000);
-        factory.setReadTimeout(1000);
+    public ClientHttpRequestFactory simpleClientHttpRequestFactory(){
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        factory.setConnectTimeout(15000);
+        factory.setReadTimeout(5000);
         return factory;
     }
 
+    public static HttpComponentsClientHttpRequestFactory generateHttpRequestFactory()
+            throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException
+    {
+        TrustStrategy acceptingTrustStrategy = (x509Certificates, authType) -> true;
+        SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
+        SSLConnectionSocketFactory connectionSocketFactory = new SSLConnectionSocketFactory(sslContext, new NoopHostnameVerifier());
+
+        HttpClientBuilder httpClientBuilder = HttpClients.custom();
+        httpClientBuilder.setSSLSocketFactory(connectionSocketFactory);
+        CloseableHttpClient httpClient = httpClientBuilder.build();
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        factory.setHttpClient(httpClient);
+        return factory;
+    }
 }
-
-

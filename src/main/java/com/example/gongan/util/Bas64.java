@@ -22,8 +22,6 @@ public class Bas64 {
         // 对字节数组Base64编码
         BASE64Encoder encoder = new BASE64Encoder();
         // 返回Base64编码过的字节数组字符串
-        System.out.println("*********************************************");
-        System.out.print("本地图片转换Base64:" + encoder.encode(Objects.requireNonNull(data)));
-        return encoder.encode(Objects.requireNonNull(data));
+        return encoder.encode(data);
     }
 }

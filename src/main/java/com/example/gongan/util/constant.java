@@ -3,7 +3,9 @@
 public class constant {
 
     //配置外围地址
-    public static String gongan_url = "http://192.168.1.105:8082";
+    //public static String gongan_url = "http://127.0.0.1:8082";
+    //public static String gongan_url = "https://172.31.35.20:99/api/importData";
+    public static String gongan_url = "https://172.31.35.20:99/";
     // accessKey
     public static String gongan_accessKey = "F209F3288DD39E28FD398B1048643CDD";
     //设备类型-自定义编码
