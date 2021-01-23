@@ -3,12 +3,18 @@ package com.example.gongan.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.gongan.pojo.UserPram.UploadDeviceInfo;
+import com.example.gongan.pojo.UserPram.UploadDeviceStatusData;
+import com.example.gongan.pojo.UserPram.UploadFaceRecognition;
 import com.example.gongan.pojo.UserPram.UploadVehicleInfo;
 import com.example.gongan.pojo.UserPram.UserDesensitizationInfo;
-import com.example.gongan.pojo.UserPram.UserParm;
-
+import com.example.gongan.pojo.UserPram.UploadResidentInfo;
+import com.example.gongan.pojo.UserPram.UploadSmartAccessControlData;
+import com.example.gongan.pojo.UserPram.UploadVehicleIdenData;
 import com.example.gongan.restapi.ApiZhsqSdkClient;
 import com.example.gongan.util.Bas64;
+import com.example.gongan.util.constant;
+import com.example.gongan.util.utiltools;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ResourceUtils;
@@ -24,8 +30,14 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,46 +56,52 @@ import javax.servlet.http.HttpServletResponse;
         @Autowired
         private ApiZhsqSdkClient apiHttpClient;
 
-            //0 上传设备信息
+            /**
+            * 3.2.1.3.1 接口介绍
+            * 上传设备信息
+            */
             @ApiOperation(value = "上传设备信息")
             @ResponseBody
             @RequestMapping(value = "/uploadDeviceInfos",method = RequestMethod.POST)
             public String UploadDeviceInfos(UploadDeviceInfo info) throws Exception {
+                String result;
 
                 try {
                     JSONArray dataInfo = new JSONArray();
                     JSONObject data1 = new JSONObject();
                     //设备名称
-                    data1.put("DEV_NAME","001 智慧门禁设备");
+                    data1.put("DEV_NAME",info.getDEV_NAME());
                     // 设备类型
-                    data1.put("DEV_TYPE","001");
+                    data1.put("DEV_TYPE",info.getDEV_TYPE());
                     // 设备编码
-                    data1.put("DEVICE_NUMBER","1101081111111-001-33566442");
+                    data1.put("DEVICE_NUMBER",info.getDEVICE_NUMBER());
                     // 安装地址
-                    data1.put("PLACE","北京市丰台区 XX 小区 X 号楼 X 单元");
+                    data1.put("PLACE",info.getPLACE());
                     // 经度
-                    data1.put("LONGITUDE","116.313000");
+                    data1.put("LONGITUDE",info.getLONGITUDE());
                     // 纬度
-                    data1.put("LATITUDE","39.972000");
+                    data1.put("LATITUDE",info.getLATITUDE());
                     // 备注
-                    data1.put("MEMO","测试 1");
+                    data1.put("MEMO",info.getMEMO());
                     dataInfo.add(data1);
+
+                    result = apiHttpClient.puttUploadDeviceInfos(dataInfo);
                 } catch (Exception e) {
                     //TODO: handle exception
+                    return "uploadDeviceInfos" + e.getMessage();
                 }
-
-                
-                return "";
+                return result;
             }
 
-            
-
-            //3.2.2上传居民信息
+            /**
+             * 3.2.2.3.1 接口介绍
+             * 上传居民信息数据
+             */
             @ResponseBody
-            @RequestMapping(value ="/uploadResidentInfo", headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
+            @RequestMapping(value ="/uploadResidentInfos", headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
             @ApiOperation(value = "上传居民信息")
-            public String uploadResidentInfo(UserParm userParm,@RequestParam("IDCARD_FACES") MultipartFile multipartFile) throws Exception {
-                UserParm userinfo = new UserParm();
+            public String uploadResidentInfos(UploadResidentInfo userParm,@RequestParam("IDCARD_FACES") MultipartFile multipartFile) throws Exception {
+                
                 String result;
                 String originalFilename = multipartFile.getOriginalFilename();
                 //String newFileName =  originalFilename.substring(originalFilename.lastIndexOf(".") - 1);
@@ -96,27 +114,9 @@ import javax.servlet.http.HttpServletResponse;
                     file = new File(uploadPath + originalFilename);
                     multipartFile.transferTo(file);
 
-                    // //人员头像base64
-                    // userinfo.setIDCARD_FACE(Bas64.ImageToBase64(file.toString()));
-                    // //居民姓名
-                    // userinfo.setRESIDENT_NAME(request.getParameter("RESIDENT_NAME"));
-                    // //国籍代码
-                    // userinfo.setCITIZENSHIP_CODE(request.getParameter("CITIZENSHIP_CODE"));
-                    // //证件类型
-                    // userinfo.setIDCARD_ZJLX(request.getParameter("IDCARD_ZJLX"));
-                    // //证件号码
-                    // userinfo.setIDCARD_ZJHM(request.getParameter("IDCARD_ZJHM"));
-                    // //手机号码
-                    // userinfo.setPHONE_NUM(request.getParameter("PHONE_NUM"));
-                    // //居住地址
-                    // userinfo.setJZD_ADDRESS(request.getParameter("JZD_ADDRESS"));
-                    // //调用公安部接口
-
-
                     JSONArray dataInfo = new JSONArray();
                     JSONObject data1 = new JSONObject();
                     String base64Str = Bas64.ImageToBase64(file.toString());
-                    
                     //居民姓名
                     data1.put("RESIDENT_NAME", request.getParameter("RESIDENT_NAME"));
                     // 人脸图片 base64
@@ -135,7 +135,7 @@ import javax.servlet.http.HttpServletResponse;
                     result = apiHttpClient.puttUploadResidentInfo(dataInfo);
 
                 } catch (Exception e) {
-                    return "shanchuanjumin" + e.getMessage();
+                    return "uploadResidentInfo" + e.getMessage();
                 } finally {
                     try{
                         //file.delete();
@@ -146,35 +146,17 @@ import javax.servlet.http.HttpServletResponse;
 
                 return result;
             }
-
-            //3.3.1接收居民脱敏信息
-            @ApiOperation(value = "接收居民脱敏信息")
-            @ResponseBody
-            @RequestMapping(value = "/receiveDesInfoResidents",headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
-            public String receiveDesInfoResidents(UserDesensitizationInfo userDesensitizationInfo) throws Exception {
-                UserDesensitizationInfo date_info = new UserDesensitizationInfo();
-                String result;
-                try {
-                    date_info.setStartTime(request.getParameter("startTime"));
-                    date_info.setEndTime(request.getParameter("endTime"));
-                    date_info.setRows(request.getParameter("rows"));
-                    result = apiHttpClient.getReceiveDesInfoResidents(date_info);
-                } catch (Exception e) {
-                    //TODO: handle exception
-                    return "receiveDesInfoResidents error." + e;
-                }
-                return result;
-            }
-
-            //3.2.3 上传车辆信息
+            /**
+             * 3.2.3 上传车辆信息
+             * 上传居民信息数据
+             */
             @ApiOperation(value = "上传车辆信息")
             @ResponseBody
             @RequestMapping(value = "/uploadVehicleInfo",headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
             public String uploadVehicleInfo(UploadVehicleInfo uploadVehicleInfo) throws Exception {
-                UploadVehicleInfo date_info = new UploadVehicleInfo();
+                
                 String result;
                 try {
-
                     JSONArray dataInfo = new JSONArray();
                     JSONObject data1 = new JSONObject();
                     // 车牌号码
@@ -202,40 +184,375 @@ import javax.servlet.http.HttpServletResponse;
                 
                 return result;
             }
-            
-            //4上传车辆识别数据
-            @ApiOperation(value = "上传车辆识别数据")
+
+            /**
+             * 3.3.1.1 接口介绍
+             * 接收居民脱敏信息
+            */
+            @ApiOperation(value = "接收脱敏居民信息")
             @ResponseBody
-            @RequestMapping(value = "/shangchuancheliang",headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
-            public String shangchuancheliang(UploadVehicleInfo uploadVehicleInfo) throws Exception {
-                UploadVehicleInfo date_info = new UploadVehicleInfo();
+            @RequestMapping(value = "/receiveDesInfoResidents",headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
+            public String receiveDesInfoResidents(UserDesensitizationInfo userDesensitizationInfo) throws Exception {
+                UserDesensitizationInfo date_info = new UserDesensitizationInfo();
                 String result;
                 try {
-                    //车牌号码
-                    date_info.setVEHICLE_CODE(request.getParameter("VEHICLE_CODE"));
-                    //使用人姓名
-                    date_info.setUSER_NAME(request.getParameter("USER_NAME"));
-                    //使用人证件类型
-                    date_info.setUSER_ZJLX(request.getParameter("USER_ZJLX"));
-                    //使用人证件号码
-                    date_info.setUSER_ZJHM(request.getParameter("USER_ZJHM"));
-                    //使用人居住地址信息
-                    date_info.setUSER_ADDRESS(request.getParameter("USER_ADDRESS"));
-                    //车辆品牌
-                    date_info.setVEHICLE_BRAND(request.getParameter("VEHICLE_BRAND"));
-                    //车辆颜色
-                    date_info.setVEHICLE_COLOR(request.getParameter("VEHICLE_COLOR"));
-                    //备注
-                    date_info.setMEMO(request.getParameter("MEMO"));
-                    result = apiHttpClient.putCheLiang(date_info);
+                    date_info.setStartTime(request.getParameter("startTime"));
+                    date_info.setEndTime(request.getParameter("endTime"));
+                    date_info.setRows(request.getParameter("rows"));
+                    result = apiHttpClient.getReceiveDesInfoResidents(date_info);
+                } catch (Exception e) {
+                    //TODO: handle exception
+                    return "receiveDesInfoResidents error." + e;
+                }
+                return result;
+            }
+
+            /**
+             * 3.4.1.1 接口介绍
+             * 用来上报人脸识别设备产生的人像抓拍数据
+             * */
+            @ApiOperation(value = "上传人脸识别数据")
+            @ResponseBody
+            @RequestMapping(value = "/uploadFaceRecognition",headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
+            public String uploadFaceRecognitions(UploadFaceRecognition uploadFaceRecognition,@RequestParam MultipartFile[] FACE_IMAGES) throws Exception {
+                
+                String result = "";
+                File filepath = null;
+                File path = new File(ResourceUtils.getURL("classpath:").getPath());
+                File upload = new File(path.getAbsolutePath(), "static/tmpupload/");
+                String uploadPath = upload + "\\";
+                
+                if (FACE_IMAGES != null && FACE_IMAGES.length > 0) {
+                    //循环获取file数组中得文件
+                    for (int i = 0; i < FACE_IMAGES.length; i++) {
+                        MultipartFile file = FACE_IMAGES[i];
+                        if (!upload.exists()) upload.mkdirs();
+                        filepath = new File(uploadPath + file.getOriginalFilename().toString());
+                        
+                        file.transferTo(filepath);
+                        //0 人脸图片; 1 背景图片
+                        if(0 == i){
+                            uploadFaceRecognition.setFACE_IMAGE(Bas64.ImageToBase64(filepath.toString()));
+                        }else{
+                            uploadFaceRecognition.setBACKGROUND_IMAGE(Bas64.ImageToBase64(filepath.toString()));
+                        }
+                    }
+                }
+
+                try {
+
+                    JSONObject json = new JSONObject();
+                    JSONArray dataInfo = new JSONArray();
+                    List<String> data1 = new ArrayList<String>();
+                    // 设备编码
+                    data1.add(uploadFaceRecognition.getDEVICE_NUMBER());
+                    // 人脸图片
+                    data1.add(uploadFaceRecognition.getFACE_IMAGE());
+                    // 背景图片
+                    data1.add(uploadFaceRecognition.getBACKGROUND_IMAGE());
+                    Date date = new Date();
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    // 抓拍时间
+                    data1.add(format.format(date));
+                    dataInfo.add(data1);
+                    
+                    List<String> columns = new ArrayList<>();
+                    columns.add("DEVICE_NUMBER");
+                    columns.add("FACE_IMAGE");
+                    columns.add("BACKGROUND_IMAGE");
+                    columns.add("CAPTURE_TIME ");
+                    
+                    JSONArray dataItems = new JSONArray();
+                    for (int i = 0; i < columns.size(); i++) {
+                        JSONObject item = new JSONObject();
+                        item.put("Name", columns.get(i));
+                        item.put("Type", "String");
+                        item.put("Fmt", "");
+                        dataItems.add(item);
+                    }
+                    JSONObject dataset = new JSONObject();
+                    dataset.put("ResourceName", "capturedata");
+                    dataset.put("DataItems", dataItems);
+                    dataset.put("DataInfo", dataInfo);
+
+                    // From:数据来源端-小区编码
+                    json.put("From", constant.area_code);
+                    // TO:服务端-平台
+                    json.put("To", "110000000001");
+                    // MessageSequence:消息的唯一标识-uuid
+                    json.put("MessageSequence", utiltools.getDateUUid(5));
+                    JSONObject requestParam = new JSONObject();
+                    // isTransaction:是否开启事务-默认 0
+                    requestParam.put("isTransaction", "0");
+                    JSONArray datasets = new JSONArray();
+                    // 获取上传的数据-门禁：getTrafficData，车闸：getVehicleData，人像：getImageCapture
+                    datasets.add(dataset);
+                    // 消息体添加数据
+                    requestParam.put("Dataset", datasets);
+                    json.put("RequestParam", requestParam);
+                    result = apiHttpClient.putUploadFaceRecognitions(json);
                     
                 } catch (Exception e) {
                     //TODO: handle exception
-                    return "uploadVehicleInfo error." + e;
+                    return "receiveDesInfoResidents error." + e;
+                }
+                return result;
+            }
+            /**
+             * 3.4.2.1 接口介绍
+             * 上传车辆识别数据
+            */
+
+            @ApiOperation(value = "上传车辆识别数据")
+            @ResponseBody
+            @RequestMapping(value = "/uploadVehicleIdenDatas",headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
+            public String uploadVehicleIdenDatas(UploadVehicleIdenData uploadVehicleIdenData,@RequestParam MultipartFile[] FACE_IMAGES) throws Exception {
+                
+                String result = "";
+                try {
+                    
+                    File filepath = null;
+                    File path = new File(ResourceUtils.getURL("classpath:").getPath());
+                    File upload = new File(path.getAbsolutePath(), "static/tmpupload/");
+                    String uploadPath = upload + "\\";
+                    
+                    if (FACE_IMAGES != null && FACE_IMAGES.length > 0) {
+                        //循环获取file数组中得文件
+                        for (int i = 0; i < FACE_IMAGES.length; i++) {
+                            MultipartFile file = FACE_IMAGES[i];
+                            if (!upload.exists()) upload.mkdirs();
+                            filepath = new File(uploadPath + file.getOriginalFilename().toString());
+                            
+                            file.transferTo(filepath);
+                            //0 车牌照片; 1 背景图片
+                            if(0 == i){
+                                uploadVehicleIdenData.setIMAGE(Bas64.ImageToBase64(filepath.toString()));
+                            }else{
+                                uploadVehicleIdenData.setBACKGROUND_IMAGE(Bas64.ImageToBase64(filepath.toString()));
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    //TODO: handle exception
+                    return "uploadVehicleIdenDatas error." + e.getMessage();
+                }
+
+
+                try {
+                    JSONArray dataInfo = new JSONArray();
+                    List<String> data1 = new ArrayList<String>();
+                    // 车牌信息
+                    data1.add(uploadVehicleIdenData.getPLATE_NUMBER());
+                    Date date = new Date();
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    // 设备编码
+                    data1.add(uploadVehicleIdenData.getDEVICE_NUMBER());
+                    // 进出类型
+                    data1.add(String.valueOf(uploadVehicleIdenData.getIN_OUT_TYPE()));
+                    // 车牌图片 base64
+                    data1.add(uploadVehicleIdenData.getIMAGE());
+                    // 背景图片 base64
+                    data1.add(uploadVehicleIdenData.getBACKGROUND_IMAGE());
+                    // 创建时间
+                    data1.add(format.format(date));
+                    dataInfo.add(data1);
+
+                    List<String> columns = new ArrayList<>();
+                    columns.add("PLATE_NUMBER");
+                    columns.add("DEVICE_NUMBER");
+                    columns.add("IN_OUT_TYPE");
+                    columns.add("IMAGE");
+                    columns.add("BACKGROUND_IMAGE");
+                    columns.add("CREATETIME");
+
+                    JSONArray dataItems = new JSONArray();
+                    for (int i = 0; i < columns.size(); i++) {
+                        JSONObject item = new JSONObject();
+                        item.put("Name", columns.get(i));
+                        item.put("Type", "String");
+                        item.put("Fmt", "");
+                        dataItems.add(item);
+                    }
+                    JSONObject dataset = new JSONObject();
+                    dataset.put("ResourceName", "vehicledata");
+                    dataset.put("DataItems", dataItems);
+                    dataset.put("DataInfo", dataInfo);
+
+                    JSONObject json = new JSONObject();
+                    // From:数据来源端-小区编码
+                    json.put("From", constant.area_code);
+                    // TO:服务端-平台
+                    json.put("To", "110000000001");
+                    // MessageSequence:消息的唯一标识-uuid
+                    json.put("MessageSequence", utiltools.getDateUUid(5));
+                    JSONObject requestParam = new JSONObject();
+                    // isTransaction:是否开启事务-默认 0
+                    requestParam.put("isTransaction", "0");
+                    JSONArray datasets = new JSONArray();
+                    // 获取上传的数据-门禁：getTrafficData，车闸：getVehicleData，人像：getImageCapture
+                    datasets.add(dataset);
+                    // 消息体添加数据
+                    requestParam.put("Dataset", datasets);
+                    json.put("RequestParam", requestParam);
+
+                    result = apiHttpClient.putUploadVehicleIdenData(json);
+                    
+                } catch (Exception e) {
+                    //TODO: handle exception
+                    return "uploadVehicleIdenDatas error." + e.getMessage();
                 }
 
                 return result;
             }
 
+            /**
+             * 3.2.2.3.1 接口介绍
+             * 上传智慧门禁数据
+             */
+            @ResponseBody
+            @RequestMapping(value ="/upSACDatas", headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
+            @ApiOperation(value = "上传智慧门禁数据")
+            public String upSACDatas(UploadSmartAccessControlData upSACData,@RequestParam("FACE_IMAGES") MultipartFile multipartFile) throws Exception {
+                String base64Str;
+                String result;
+                try {
+                    File file = null;
+                    String originalFilename = multipartFile.getOriginalFilename();
+                    File path = new File(ResourceUtils.getURL("classpath:").getPath());
+                    File upload = new File(path.getAbsolutePath(), "static/tmpupload/");
+                    if (!upload.exists()) upload.mkdirs();
+                    String uploadPath = upload + "\\";
+                    file = new File(uploadPath + originalFilename);
+                    multipartFile.transferTo(file);
+                    upSACData.setFACE(Bas64.ImageToBase64(file.toString()));
+                    
+                } catch (Exception e) {
+                    return "upSACDatas" + e.getMessage() ;
+                }
+                try {
+                    JSONArray dataInfo = new JSONArray();
+                    // 上传的数据内容-与字段一一对应
+                    List<String> data1 = new ArrayList<String>();
+                    // 居民信息 id
+                    data1.add(upSACData.getRESIDENT_ID());
+                    // 图片信息的 base64 串
+                    data1.add(upSACData.getFACE());
+                    Date date = new Date();
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    // 创建时间
+                    data1.add(format.format(date));
+                    // 开门方式
+                    data1.add(upSACData.getOPENTYPE());
+                    // 设备编码
+                    data1.add(upSACData.getDEVICE_NUMBER());
+                    // 开门状态
+                    data1.add(upSACData.getOPEN_STATUS());
+                    dataInfo.add(data1);
+
+                    // 上传的字段
+                    List<String> columns = new ArrayList<>();
+                    columns.add("RESIDENT_ID");
+                    columns.add("FACE");
+                    columns.add("CREATETIME");
+                    columns.add("OPENTYPE");
+                    columns.add("DEVICE_NUMBER");
+                    columns.add("OPEN_STATUS");
+
+                    JSONArray dataItems = new JSONArray();
+                    // 构造字段
+                    for (int i = 0; i < columns.size(); i++) {
+                        JSONObject item = new JSONObject();
+                        item.put("Name", columns.get(i));
+                        item.put("Type", "String");
+                        item.put("Fmt", "");
+                        dataItems.add(item);
+                    }
+                    JSONObject requestParam = new JSONObject();
+                    JSONObject dataset = new JSONObject();
+                    JSONArray datasets = new JSONArray();
+                    JSONObject json = new JSONObject();
+                    // ResourceName：数据类别的标识
+                    dataset.put("ResourceName", "trafficdata");
+
+                    // DataItems：数据字段
+                    dataset.put("DataItems", dataItems);
+                    // DataInfo：数据内容
+                    dataset.put("DataInfo", dataInfo);
+
+                    datasets.add(dataset);
+                    // 消息体添加数据
+                    requestParam.put("Dataset", datasets);
+                    json.put("RequestParam", requestParam);
+
+                    result = apiHttpClient.putupSACDatas(json);
+                } catch (Exception e) {
+                    //TODO: handle exception
+                    return "upSACDatas" + e.getMessage();
+                }
+                return result;
+            }
+            /**
+             * 3.4.4.1 接口介绍
+             * 上传设备状态数据
+            */
+            @ApiOperation(value = "上传设备状态数据")
+            @ResponseBody
+            @RequestMapping(value = "/uploadDeviceStatusDatas",headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
+            public String uploadDeviceStatusDatas(UploadDeviceStatusData uploadDeviceStatusData) throws Exception {
+                
+                String result;
+                try {
+                    JSONObject json = new JSONObject();
+                    JSONArray dataInfo = new JSONArray();
+                    JSONObject requestParam = new JSONObject();
+                    JSONArray datasets = new JSONArray();
+
+                    List<String> data1 = new ArrayList<String>();
+                    Date date = new Date();
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    // 设备编码
+                    data1.add(uploadDeviceStatusData.getDEV_NUMBER());
+                    // 设备状态
+                    data1.add(uploadDeviceStatusData.getDEV_STATUS());
+                    String UPLOAD_TIME = uploadDeviceStatusData.getUPLOAD_TIME();
+                    // 上传时间
+                    if(UPLOAD_TIME.isEmpty()){
+                        
+                        data1.add(format.format(date));
+                    }else{
+                        data1.add(format.format(UPLOAD_TIME));
+                    }
+                    
+
+                    dataInfo.add(data1);
+                    
+                    List<String> columns = new ArrayList<>();
+                    columns.add("DEV_NUMBER");
+                    columns.add("DEV_STATUS");
+                    columns.add("UPLOAD_TIME");
+                    
+                    JSONArray dataItems = new JSONArray();
+                    for (int i = 0; i < columns.size(); i++) {
+                    JSONObject item = new JSONObject();
+                        item.put("Name", columns.get(i));
+                        item.put("Type", "String");
+                        item.put("Fmt", "");
+                        dataItems.add(item);
+                    }
+                    JSONObject dataset = new JSONObject();
+                    dataset.put("ResourceName", "devdata");
+                    dataset.put("DataItems", dataItems);
+                    dataset.put("DataInfo", dataInfo);
+                    datasets.add(dataset);
+                    // 消息体添加数据
+                    requestParam.put("Dataset", datasets);
+                    json.put("RequestParam", requestParam);
+                    result = apiHttpClient.putUploadDeviceStatusDatas(json);
+                } catch (Exception e) {
+                    //TODO: handle exception
+                    return "uploadDeviceStatusDatas error." + e;
+                }
+                return result;
+            }
 
 }

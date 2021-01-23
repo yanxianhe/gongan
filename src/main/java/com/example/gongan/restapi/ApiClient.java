@@ -8,7 +8,7 @@ import com.example.gongan.pojo.Dataset;
 import com.example.gongan.pojo.RequestParam;
 import com.example.gongan.pojo.UserPram.UploadVehicleInfo;
 import com.example.gongan.pojo.UserPram.UserDesensitizationInfo;
-import com.example.gongan.pojo.UserPram.UserParm;
+import com.example.gongan.pojo.UserPram.UploadResidentInfo;
 import com.example.gongan.restconfig.RestTemplateConfig;
 import com.example.gongan.util.Bas64;
 import com.example.gongan.util.constant;
@@ -38,7 +38,7 @@ public class ApiClient {
     public RestTemplate restTemplate;
 
     //上传居民信息
-    public String puttUser(UserParm userinfo) throws Exception {
+    public String puttUser(UploadResidentInfo userinfo) throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         //String url = constant.gongan_url + "/api/hello/getgongan";

@@ -3,7 +3,7 @@ package com.example.gongan.restapi;
 import com.example.gongan.pojo.DataItems;
 import com.example.gongan.pojo.Dataset;
 import com.example.gongan.pojo.RequestParam;
-import com.example.gongan.pojo.UserPram.UserParm;
+import com.example.gongan.pojo.UserPram.UploadResidentInfo;
 import com.example.gongan.util.Bas64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -54,7 +54,7 @@ public class ApiHttpClient {
        // data1.put("PHONE_NUM", "13970453216");
         // 居住地址
         //data1.put("JZD_ADDRESS", "测试小区 11 单元 11 号楼");
-        UserParm userParm = new UserParm();
+        UploadResidentInfo userParm = new UploadResidentInfo();
        // 居民姓名
         userParm.setRESIDENT_NAME("孙尚玉");
         // 人脸图片 base64

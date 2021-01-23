@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel("上传居民信息")
-public class UserParm implements Serializable {
+public class UploadResidentInfo implements Serializable {
     private static final long serialVersionUID = -2263873979997509419L;
 
     @ApiModelProperty(value = "居民姓名")
@@ -30,10 +30,10 @@ public class UserParm implements Serializable {
     @ApiModelProperty(value = "人员头像")
     private MultipartFile IDCARD_FACES;
 
-    public UserParm() {
+    public UploadResidentInfo() {
     }
 
-    public UserParm(String RESIDENT_NAME, String IDCARD_FACE, String CITIZENSHIP_CODE, String IDCARD_ZJLX, String IDCARD_ZJHM, String PHONE_NUM, String JZD_ADDRESS) {
+    public UploadResidentInfo(String RESIDENT_NAME, String IDCARD_FACE, String CITIZENSHIP_CODE, String IDCARD_ZJLX, String IDCARD_ZJHM, String PHONE_NUM, String JZD_ADDRESS) {
         this.RESIDENT_NAME = RESIDENT_NAME;
         this.IDCARD_FACE = IDCARD_FACE;
         this.CITIZENSHIP_CODE = CITIZENSHIP_CODE;
