@@ -1,4 +1,4 @@
-﻿package com.example.gongan.pojo.UserPram;
+package com.example.gongan.pojo.UserPram;
 import java.io.Serializable;
 
 import io.swagger.annotations.ApiModel;

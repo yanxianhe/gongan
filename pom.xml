@@ -11,6 +11,7 @@
     <groupId>com.example</groupId>
     <artifactId>gongan</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
     <name>gongan</name>
     <description>Demo project for Spring Boot</description>
     <properties>
@@ -163,6 +164,8 @@
                     <!-- <compilerArguments>
                         <extdirs>${project.basedir}/src/main/resources</extdirs>
                     </compilerArguments> -->
+                    <!-- 指定该jar包启动时的主类[建议] -->
+                    <mainClass>com.example.gongan.GonganApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>

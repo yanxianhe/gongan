@@ -1,4 +1,4 @@
-﻿package com.example.gongan.util;
+package com.example.gongan.util;
 
 import java.sql.Date;
 import java.text.ParseException;

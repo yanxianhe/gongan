@@ -1,4 +1,4 @@
-﻿package com.example.gongan.util;
+package com.example.gongan.util;
 
 public class constant {
 
