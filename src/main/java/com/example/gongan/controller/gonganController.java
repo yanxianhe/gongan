@@ -2,6 +2,9 @@ package com.example.gongan.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.example.gongan.pojo.UserPram.ReceiveFaceRecognitionData;
+import com.example.gongan.pojo.UserPram.ReceiveIntelligentAccessControlData;
+import com.example.gongan.pojo.UserPram.ReceiveVehicleDdentificationData;
 import com.example.gongan.pojo.UserPram.UploadDeviceInfo;
 import com.example.gongan.pojo.UserPram.UploadDeviceStatusData;
 import com.example.gongan.pojo.UserPram.UploadFaceRecognition;
@@ -26,18 +29,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.annotations.Api;
-
 import io.swagger.annotations.ApiOperation;
-
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -118,19 +116,19 @@ import javax.servlet.http.HttpServletResponse;
                     JSONObject data1 = new JSONObject();
                     String base64Str = Bas64.ImageToBase64(file.toString());
                     //居民姓名
-                    data1.put("RESIDENT_NAME", request.getParameter("RESIDENT_NAME"));
+                    data1.put("RESIDENT_NAME", userParm.getRESIDENT_NAME());
                     // 人脸图片 base64
                     data1.put("IDCARD_FACE", base64Str);
                     // 国籍代码
-                    data1.put("CITIZENSHIP_CODE", request.getParameter("CITIZENSHIP_CODE"));
+                    data1.put("CITIZENSHIP_CODE", userParm.getCITIZENSHIP_CODE());
                     // 证件类型
-                    data1.put("IDCARD_ZJLX", request.getParameter("IDCARD_ZJLX"));
+                    data1.put("IDCARD_ZJLX", userParm.getIDCARD_ZJLX());
                     // 证件号码
-                    data1.put("IDCARD_ZJHM", request.getParameter("IDCARD_ZJHM"));
+                    data1.put("IDCARD_ZJHM", userParm.getIDCARD_ZJHM());
                     // 手机号码
-                    data1.put("PHONE_NUM", request.getParameter("PHONE_NUM"));
+                    data1.put("PHONE_NUM", userParm.getPHONE_NUM());
                     // 居住地址
-                    data1.put("JZD_ADDRESS", request.getParameter("JZD_ADDRESS"));
+                    data1.put("JZD_ADDRESS", userParm.getJZD_ADDRESS());
                     dataInfo.add(data1);
                     result = apiHttpClient.puttUploadResidentInfo(dataInfo);
 
@@ -193,13 +191,10 @@ import javax.servlet.http.HttpServletResponse;
             @ResponseBody
             @RequestMapping(value = "/receiveDesInfoResidents",headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
             public String receiveDesInfoResidents(UserDesensitizationInfo userDesensitizationInfo) throws Exception {
-                UserDesensitizationInfo date_info = new UserDesensitizationInfo();
+                
                 String result;
                 try {
-                    date_info.setStartTime(request.getParameter("startTime"));
-                    date_info.setEndTime(request.getParameter("endTime"));
-                    date_info.setRows(request.getParameter("rows"));
-                    result = apiHttpClient.getReceiveDesInfoResidents(date_info);
+                    result = apiHttpClient.getReceiveDesInfoResidents(userDesensitizationInfo);
                 } catch (Exception e) {
                     //TODO: handle exception
                     return "receiveDesInfoResidents error." + e;
@@ -413,7 +408,7 @@ import javax.servlet.http.HttpServletResponse;
             @RequestMapping(value ="/upSACDatas", headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
             @ApiOperation(value = "上传智慧门禁数据")
             public String upSACDatas(UploadSmartAccessControlData upSACData,@RequestParam("FACE_IMAGES") MultipartFile multipartFile) throws Exception {
-                String base64Str;
+                
                 String result;
                 try {
                     File file = null;
@@ -555,4 +550,57 @@ import javax.servlet.http.HttpServletResponse;
                 return result;
             }
 
+            /**
+             * 3.4.4.1 接口介绍
+             * 接收人脸识别数据
+            */
+            @ApiOperation(value = "接收人脸识别数据")
+            @ResponseBody
+            @RequestMapping(value = "/receiveFaceRecognitionDatas",headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
+            public String receiveFaceRecognitionDatas(ReceiveFaceRecognitionData receiveFaceRecognitionData) throws Exception {
+                String result;
+                try {
+                    result = apiHttpClient.getReceiveFaceRecognitionDatas(receiveFaceRecognitionData);
+                } catch (Exception e) {
+                    //TODO: handle exception
+                    return "receiveDesInfoResidents error." + e;
+                }
+                return result;
+            }
+            /**
+             * 3.5.2.1 接口介绍
+             * 接收车辆识别数据
+            */
+            @ApiOperation(value = "接收车辆识别数据")
+            @ResponseBody
+            @RequestMapping(value = "/receiveVehicleDdentificationDatas",headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
+            public String receiveVehicleDdentificationDatas(ReceiveVehicleDdentificationData receiveVehicleDdentificationData) throws Exception {
+                
+                String result;
+                try {
+                    result = apiHttpClient.getReceiveVehicleDdentificationDatas(receiveVehicleDdentificationData);
+                } catch (Exception e) {
+                    //TODO: handle exception
+                    return "receiveDesInfoResidents error." + e;
+                }
+                return result;
+            }
+            
+            /**
+             * 3.5.3.1 接口介绍
+             * 接收智慧门禁数据
+            */
+            @ApiOperation(value = "接收智慧门禁数据")
+            @ResponseBody
+            @RequestMapping(value = "/receiveIntelligentAccessControlDatas",headers = "content-type=multipart/form-data",produces = { "application/json;charset=UTF-8" },method = RequestMethod.POST)
+            public String receiveIntelligentAccessControlDatas(ReceiveIntelligentAccessControlData receiveIntelligentAccessControlData) throws Exception {
+                String result;
+                try {
+                    result = apiHttpClient.getReceiveIntelligentAccessControlDatas(receiveIntelligentAccessControlData);
+                } catch (Exception e) {
+                    //TODO: handle exception
+                    return "receiveDesInfoResidents error." + e;
+                }
+                return result;
+            }
 }

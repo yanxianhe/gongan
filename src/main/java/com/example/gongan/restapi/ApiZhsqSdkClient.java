@@ -2,19 +2,13 @@ package com.example.gongan.restapi;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONPObject;
-import com.example.gongan.pojo.DataItems;
-import com.example.gongan.pojo.Dataset;
-import com.example.gongan.pojo.RequestParam;
-import com.example.gongan.pojo.UserPram.UploadVehicleInfo;
 import com.example.gongan.pojo.UserPram.UserDesensitizationInfo;
-import com.example.gongan.pojo.UserPram.UploadResidentInfo;
-import com.example.gongan.util.Bas64;
+import com.example.gongan.pojo.UserPram.ReceiveFaceRecognitionData;
+import com.example.gongan.pojo.UserPram.ReceiveIntelligentAccessControlData;
+import com.example.gongan.pojo.UserPram.ReceiveVehicleDdentificationData;
 import com.example.gongan.util.constant;
 import com.zhsq.zhsq.ZhsqClient;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -111,8 +105,11 @@ public class ApiZhsqSdkClient {
             String accessKey = constant.gongan_accessKey;
             String startTime = userDesensitizationInfo.getStartTime();
             String endTime = userDesensitizationInfo.getEndTime();
-            
-            object = client.getResData(accessKey,"residentdata",startTime,endTime);
+            if(startTime.isEmpty() || endTime.isEmpty()){
+                object = client.getResData(accessKey, "residentdata");
+            }else{
+                object = client.getResData(accessKey,"residentdata",startTime,endTime);
+            }
         } catch (Exception e) {
             //TODO: handle exception
             return e.getMessage();
@@ -200,5 +197,89 @@ public class ApiZhsqSdkClient {
         return object.toString();
 
     }
+
+
+    /**
+     * 选测项
+     * 接收脱敏居民信息
+    */
+    public String getReceiveFaceRecognitionDatas(ReceiveFaceRecognitionData dataInfo) throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String url = constant.gongan_url;
+        JSONObject object;
+        try {
+            ZhsqClient client = new ZhsqClient(url);
+            String accessKey = constant.gongan_accessKey;
+            String startTime = dataInfo.getStartTime();
+            String endTime = dataInfo.getEndTime();
+            if(startTime.isEmpty() || endTime.isEmpty()){
+                object = client.getResData(accessKey,"capturedata");
+            }else{
+                object = client.getResData(accessKey,"capturedata",startTime,endTime);
+            }
+            
+        } catch (Exception e) {
+            //TODO: handle exception
+            return e.getMessage();
+        }
+        return object.toString();
+
+    }
     
+    /**
+     * 选测项
+     * 接收车辆识别数据
+    */
+    public String getReceiveVehicleDdentificationDatas(ReceiveVehicleDdentificationData dataInfo) throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String url = constant.gongan_url;
+        JSONObject object;
+        try {
+            ZhsqClient client = new ZhsqClient(url);
+            String accessKey = constant.gongan_accessKey;
+            String startTime = dataInfo.getStartTime();
+            String endTime = dataInfo.getEndTime();
+            if(startTime.isEmpty() || endTime.isEmpty()){
+                object = client.getResData(accessKey,"vehicledata");
+            }else{
+                object = client.getResData(accessKey,"vehicledata",startTime,endTime);
+            }
+            
+        } catch (Exception e) {
+            //TODO: handle exception
+            return e.getMessage();
+        }
+        return object.toString();
+
+    }
+
+    /**
+     * 选测项
+     * 接收智慧门禁数据
+    */
+    public String getReceiveIntelligentAccessControlDatas(ReceiveIntelligentAccessControlData dataInfo) throws Exception{
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String url = constant.gongan_url;
+        JSONObject object;
+        try {
+            ZhsqClient client = new ZhsqClient(url);
+            String accessKey = constant.gongan_accessKey;
+            String startTime = dataInfo.getStartTime();
+            String endTime = dataInfo.getEndTime();
+            if(startTime.isEmpty() || endTime.isEmpty()){
+                object = client.getResData(accessKey,"trafficdata");
+            }else{
+                object = client.getResData(accessKey,"trafficdata",startTime,endTime);
+            }
+            
+        } catch (Exception e) {
+            //TODO: handle exception
+            return e.getMessage();
+        }
+        return object.toString();
+
+    }
 }
