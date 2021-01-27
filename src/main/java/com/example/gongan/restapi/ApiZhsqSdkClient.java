@@ -35,7 +35,7 @@ public class ApiZhsqSdkClient {
         String url = constant.gongan_url;
         try {
             ZhsqClient client = new ZhsqClient(url);
-            object = client.staticDataUpload(constant.gongan_accessKey, "vehicle", dataInfo.toString());  
+            object = client.staticDataUpload(constant.gongan_accessKey, "dev", dataInfo.toString());  
         } catch (Exception e) {
             //TODO: handle exception
             return e.getMessage();

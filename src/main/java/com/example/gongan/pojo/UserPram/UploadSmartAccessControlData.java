@@ -34,6 +34,10 @@ public class UploadSmartAccessControlData implements Serializable {
     @ApiModelProperty(value = "人脸图片")
     private MultipartFile FACE_IMAGES;
 
+    public UploadSmartAccessControlData(){
+
+    }
+
     public String getRESIDENT_ID() {
         return RESIDENT_ID;
     }
@@ -82,29 +86,31 @@ public class UploadSmartAccessControlData implements Serializable {
         OPEN_STATUS = oPEN_STATUS;
     }
 
-    public UploadSmartAccessControlData(){
+    public MultipartFile getFACE_IMAGES() {
+        return FACE_IMAGES;
+    }
 
+    public void setFACE_IMAGES(MultipartFile fACE_IMAGES) {
+        FACE_IMAGES = fACE_IMAGES;
     }
 
     public UploadSmartAccessControlData(String rESIDENT_ID, String fACE, String cREATETIME, String oPENTYPE,
-            String dEVICE_NUMBER, String oPEN_STATUS) {
+            String dEVICE_NUMBER, String oPEN_STATUS, MultipartFile fACE_IMAGES) {
         RESIDENT_ID = rESIDENT_ID;
         FACE = fACE;
         CREATETIME = cREATETIME;
         OPENTYPE = oPENTYPE;
         DEVICE_NUMBER = dEVICE_NUMBER;
         OPEN_STATUS = oPEN_STATUS;
+        FACE_IMAGES = fACE_IMAGES;
     }
 
     @Override
     public String toString() {
         return "UploadSmartAccessControlData [CREATETIME=" + CREATETIME + ", DEVICE_NUMBER=" + DEVICE_NUMBER + ", FACE="
-                + FACE + ", OPENTYPE=" + OPENTYPE + ", OPEN_STATUS=" + OPEN_STATUS + ", RESIDENT_ID=" + RESIDENT_ID
-                + "]";
+                + FACE + ", FACE_IMAGES=" + FACE_IMAGES + ", OPENTYPE=" + OPENTYPE + ", OPEN_STATUS=" + OPEN_STATUS
+                + ", RESIDENT_ID=" + RESIDENT_ID + "]";
     }
-
-    
-
-    
+      
     
 }

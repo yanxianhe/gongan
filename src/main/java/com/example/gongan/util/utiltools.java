@@ -31,6 +31,7 @@ public class utiltools {
     }
 
     /* 
+     * 生成唯一id
      * System.currentTimeMillis() + Random  
      */
     public static String getDateUUid(int rs){

@@ -425,7 +425,19 @@ import javax.servlet.http.HttpServletResponse;
                     return "upSACDatas" + e.getMessage() ;
                 }
                 try {
+                    JSONObject requestParam = new JSONObject();
+                    
+                    JSONArray datasets = new JSONArray();
+                    JSONObject json = new JSONObject();
                     JSONArray dataInfo = new JSONArray();
+
+                    // From:数据来源端-小区编码
+                    json.put("From", constant.area_code);
+                    // TO:服务端-平台
+                    json.put("To", "110000000001");
+                    // MessageSequence:消息的唯一标识-uuid
+                    json.put("MessageSequence", utiltools.getDateUUid(5));
+
                     // 上传的数据内容-与字段一一对应
                     List<String> data1 = new ArrayList<String>();
                     // 居民信息 id
@@ -462,10 +474,8 @@ import javax.servlet.http.HttpServletResponse;
                         item.put("Fmt", "");
                         dataItems.add(item);
                     }
-                    JSONObject requestParam = new JSONObject();
                     JSONObject dataset = new JSONObject();
-                    JSONArray datasets = new JSONArray();
-                    JSONObject json = new JSONObject();
+
                     // ResourceName：数据类别的标识
                     dataset.put("ResourceName", "trafficdata");
 
@@ -478,6 +488,8 @@ import javax.servlet.http.HttpServletResponse;
                     // 消息体添加数据
                     requestParam.put("Dataset", datasets);
                     json.put("RequestParam", requestParam);
+
+
 
                     result = apiHttpClient.putupSACDatas(json);
                 } catch (Exception e) {
@@ -502,6 +514,16 @@ import javax.servlet.http.HttpServletResponse;
                     JSONObject requestParam = new JSONObject();
                     JSONArray datasets = new JSONArray();
 
+                    // From:数据来源端-小区编码
+                    json.put("From", constant.area_code);
+                    // TO:服务端-平台
+                    json.put("To", "110000000001");
+                    // MessageSequence:消息的唯一标识-uuid
+                    json.put("MessageSequence", utiltools.getDateUUid(5));
+
+
+                    requestParam.put("isTransaction", "0");
+
                     List<String> data1 = new ArrayList<String>();
                     Date date = new Date();
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -511,12 +533,7 @@ import javax.servlet.http.HttpServletResponse;
                     data1.add(uploadDeviceStatusData.getDEV_STATUS());
                     String UPLOAD_TIME = uploadDeviceStatusData.getUPLOAD_TIME();
                     // 上传时间
-                    if(UPLOAD_TIME.isEmpty()){
-                        
-                        data1.add(format.format(date));
-                    }else{
-                        data1.add(format.format(UPLOAD_TIME));
-                    }
+                    data1.add(format.format(date));
                     
 
                     dataInfo.add(data1);
