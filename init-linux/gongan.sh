@@ -27,9 +27,9 @@ elif [ "$1" = "restart" ] ; then
 else
   echo "Usage: gongan.sh ( commands ... )"
   echo "commands:"
-  echo "  start             Start Auth API Server"
-  echo "  stop              Stop Auth API Server"
-  echo "  restart           Restart Auth API Server"
+  echo "  start             Start gongan API Server"
+  echo "  stop              Stop gongan API Server"
+  echo "  restart           Restart gongan API Server"
   exit 1
 
 fi
