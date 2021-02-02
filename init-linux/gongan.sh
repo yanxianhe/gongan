@@ -1,4 +1,4 @@
-#!/usr/bin env bash
+#!/usr/bin/env bash
 export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/software/usr/bin:/software/usr/sbin:/software/usr/local/bin:/software/usr/local/sbin
 
 filePath=`dirname $0`
